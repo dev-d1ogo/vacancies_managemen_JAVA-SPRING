@@ -37,6 +37,7 @@ public class CandidateEntity {
     
     @Length(max = 500)
     private String curriculum;
+    
     @CreationTimestamp
     private LocalDateTime created_at;
 }

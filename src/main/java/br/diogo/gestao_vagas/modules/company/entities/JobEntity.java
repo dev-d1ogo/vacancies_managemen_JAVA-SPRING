@@ -6,42 +6,37 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 
 @Entity(name = "jobs")
+@Data
 public class JobEntity {
+
+    @Length(min = 10, message = "A descriçao para o trabalho deve conter um pouco mais de 10 caracteres")
+    private String benefits;
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank(message = "O nome da empresa não pode ser vazio")
-    private String name;
-
-    @Column(unique = true)
-    @Email(message = "O campo (email) deve conter um e-mail valido")
-    private String email;
-
-    @Length(min = 6, message = "A senha deve conter no minímo 6 caracteres")
-    private String password;
-    
+    @NotBlank(message = "Preencha a senioridade")
+    private String level;
    
+    @NotBlank(message = "A descriçao da vaga deve estar preenchida")
+    private String description;
 
     @ManyToOne()
-    @JoinColumn(name = "company_id", nullable = false)
-    @NotBlank
+    @JoinColumn(name = "company_id", insertable = false, updatable = false)
     private CompanyEntity company;
+
+    private UUID company_id;
     
-
-
     @CreationTimestamp
     private LocalDateTime created_at;
 

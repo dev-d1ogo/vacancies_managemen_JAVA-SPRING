@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,8 +25,8 @@ public class CompanyEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-
     @Column(unique = true)
+    @NotBlank(message = "Digite um e-mail")
     @Email(message = "O campo (email) deve conter um e-mail valido")
     private String email;
     
@@ -45,8 +44,6 @@ public class CompanyEntity {
     @Column(unique = true, nullable = false)
     private String name;
 
-    private String benefits;
-
     @Pattern(
         regexp = "^(https?:\\/\\/)?(www\\.)?[a-zA-Z0-9-]+(\\.[a-zA-Z]{2,})+(\\/[a-zA-Z0-9#]+\\/?)?$",
         message = "Website inválido. Tente uma URL válida."
@@ -54,10 +51,11 @@ public class CompanyEntity {
     private String website;
 
     // Relacionamento inverso
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
+    
+    @OneToMany(mappedBy = "company")
     private List<JobEntity> jobs;
     
-    private String level;
+    
 
     @CreationTimestamp
     private LocalDateTime created_at;

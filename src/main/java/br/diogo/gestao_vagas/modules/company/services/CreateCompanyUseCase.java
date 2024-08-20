@@ -1,6 +1,7 @@
 package br.diogo.gestao_vagas.modules.company.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.diogo.gestao_vagas.exceptions.CompanyAlreadyExists;
@@ -12,16 +13,27 @@ public class CreateCompanyUseCase {
     @Autowired
     private CompanyRepository companyRepository;
 
-    public CompanyEntity create(CompanyEntity company) {
-        boolean companyHasAlreadyBeenRegistered = this.companyRepository
-                .findByEmail(company.getEmail())
-                .isPresent();
+    @Autowired
+    private PasswordEncoder hashedPassword;
 
-        if (companyHasAlreadyBeenRegistered) {
-            throw new CompanyAlreadyExists();
-        }
+    public CompanyEntity create(CompanyEntity company) {
+        this.validateCompanyDoesNotExist(company.getCompany_user());
+        this.encodeCompanyPassword(company);
+        
         CompanyEntity companyRegistered = this.companyRepository.save(company);
 
         return companyRegistered;
+    }
+
+    private void validateCompanyDoesNotExist(String companyUser) {
+        companyRepository.findByCompany(companyUser)
+                .ifPresent(existingCompany -> {
+                    throw new CompanyAlreadyExists();
+                });
+    }
+
+    private void encodeCompanyPassword(CompanyEntity company) {
+        String encodedPassword = hashedPassword.encode(company.getPassword());
+        company.setPassword(encodedPassword);
     }
 }
